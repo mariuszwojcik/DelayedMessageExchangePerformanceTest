@@ -20,7 +20,13 @@ namespace TestPublisher
 
         protected TestBase()
         {
-            var factory = new ConnectionFactory { HostName = ConfigurationManager.AppSettings["RabbitMqHost"], VirtualHost = "/" };
+            var factory = new ConnectionFactory
+            {
+                HostName = ConfigurationManager.AppSettings["RabbitMqHost"], 
+                VirtualHost = "/",
+                UserName = ConfigurationManager.AppSettings["RabbitMqUsername"],
+                Password = ConfigurationManager.AppSettings["RabbitMqPassword"]
+            };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _logger = LogManager.GetLogger("");

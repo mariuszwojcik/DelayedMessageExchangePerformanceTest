@@ -34,7 +34,13 @@ namespace TestConsumer
         {
             Console.WriteLine(Info);
 
-            var factory = new ConnectionFactory { HostName = ConfigurationManager.AppSettings["RabbitMqHost"], VirtualHost = "/" };
+            var factory = new ConnectionFactory
+            {
+                HostName = ConfigurationManager.AppSettings["RabbitMqHost"],
+                VirtualHost = "/",
+                UserName = ConfigurationManager.AppSettings["RabbitMqUsername"],
+                Password = ConfigurationManager.AppSettings["RabbitMqPassword"]
+            };
             var connection = factory.CreateConnection();
             var model = connection.CreateModel();
 
