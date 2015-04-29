@@ -42,6 +42,7 @@
       <HintPath>..\packages\RabbitMQ.Client.3.5.1\lib\net40\RabbitMQ.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -51,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DelayedMessagePublisher.cs" />
+    <Compile Include="MessagePublisherBase.cs" />
     <Compile Include="Names.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

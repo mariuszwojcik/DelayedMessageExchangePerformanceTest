@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using log4net;
 using RabbitMQ.Client;
 
@@ -19,7 +20,7 @@ namespace TestPublisher
 
         protected TestBase()
         {
-            var factory = new ConnectionFactory { HostName = "localhost", VirtualHost = "/" };
+            var factory = new ConnectionFactory { HostName = ConfigurationManager.AppSettings["RabbitMqHost"], VirtualHost = "/" };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _logger = LogManager.GetLogger("");

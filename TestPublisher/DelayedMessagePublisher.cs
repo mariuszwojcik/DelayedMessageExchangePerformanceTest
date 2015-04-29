@@ -1,67 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading;
 using RabbitMQ.Client;
 
 namespace TestPublisher
 {
-    public class DelayedMessagePublisher
+    public class DelayedMessagePublisher : MessagePublisherBase
     {
-        private readonly IModel _model;
-        private readonly TimeSpan _delay;
-        private readonly IList<StatRecord> _stats;
-        private readonly Stopwatch _watch;
-        private long _counter;
+        private readonly int _delay;
 
-        public DelayedMessagePublisher(IConnection connection, TimeSpan delay)
+        public DelayedMessagePublisher(IConnection connection, int delay) : base(connection)
         {
-            _model = connection.CreateModel();
             _delay = delay;
-            _stats = new List<StatRecord>(600);
-            _watch = new Stopwatch();
         }
 
-        public IList<StatRecord> Stats
+        protected override string ExchangeName
         {
-            get { return _stats; }
+            get { return Names.DelayedExchangeName; }
         }
 
-        public Stopwatch Watch
+        protected override string MessagePostfix
         {
-            get { return _watch; }
+            get { return String.Format("(delay: {0})", _delay); }
         }
 
-        public void Run(int noOfMessagesToPublish)
+        protected override Dictionary<string, object> MessageHeaders
         {
-            var statsCollector = new Timer(state =>
+            get
             {
-                _stats.Add(new StatRecord(Interlocked.Read(ref _counter)));
-            }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
-
-            var publishingThread = new Thread(PublishMessages);
-            _watch.Start();
-            publishingThread.Start(noOfMessagesToPublish);
-
-            publishingThread.Join();
-            _watch.Stop();
-            statsCollector.Dispose();
-        }
-
-        private void PublishMessages(object noOfMessagesToPublish)
-        {
-            var delay = (int) _delay.TotalMilliseconds;
-            for (var i = 0; i < (int)noOfMessagesToPublish; i++)
-            {
-                var props = _model.CreateBasicProperties();
-                props.Headers = new Dictionary<string, object>
+                return new Dictionary<string, object>
                 {
-                    {"x-delay", delay}
-                };
-                _model.BasicPublish(Names.DelayedExchangeName, Names.RoutingKey, props, Encoding.Default.GetBytes("Hello World!"));
-
-                Interlocked.Increment(ref _counter);
+                    {"x-delay", _delay}
+                }; ;
             }
         }
     }
